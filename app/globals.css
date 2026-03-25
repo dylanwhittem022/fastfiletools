@@ -1,12 +1,57 @@
-/* app/globals.css */
+/* Base body */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: #f9fafb;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
   color: #111;
+  overflow-x: hidden;
+  position: relative;
 }
 
+/* Floating gradient shapes */
+body::before,
+body::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.6;
+  z-index: 0;
+}
+
+body::before {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle at 30% 30%, #ff9a9e, #fad0c4);
+  top: -200px;
+  left: -200px;
+  animation: float1 15s ease-in-out infinite alternate;
+}
+
+body::after {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle at 70% 70%, #a18cd1, #fbc2eb);
+  bottom: -250px;
+  right: -250px;
+  animation: float2 20s ease-in-out infinite alternate;
+}
+
+/* Floating animation */
+@keyframes float1 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(30px, 50px) rotate(45deg); }
+}
+
+@keyframes float2 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-40px, -30px) rotate(-30deg); }
+}
+
+/* Main container stays on top of background */
 main {
+  position: relative;
+  z-index: 1;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -15,6 +60,7 @@ main {
   padding: 2rem;
 }
 
+/* Card and other elements remain unchanged */
 h1 {
   font-size: 3rem;
   font-weight: bold;
@@ -29,27 +75,19 @@ h1 {
 }
 
 .card {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.95);
   padding: 2rem;
   border-radius: 1rem;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: transform 0.3s ease;
 }
 
-.card.dragover {
-  transform: scale(1.02);
-  border: 2px dashed #111;
-}
-
-input[type="file"] {
-  display: none;
-}
-
+/* Drag & drop, button, result, footer same as before */
 .drop-area {
   border: 2px dashed #ccc;
   border-radius: 1rem;
