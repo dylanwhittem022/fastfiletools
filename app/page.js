@@ -11,43 +11,62 @@ export default function Home() {
     if (!file) return alert("Upload a PDF");
 
     setLoading(true);
+    setResult(null);
 
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/count", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch("/api/count", {
+        method: "POST",
+        body: formData,
+      });
 
-    const data = await res.json();
-    setResult(data);
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      console.error(err);
+      setResult({ error: "Failed to process PDF" });
+    }
+
     setLoading(false);
   };
 
   return (
-    <main style={{ padding: 20 }}>
+    <main>
       <h1>Fast File Tools</h1>
-      <h2>PDF Word Counter</h2>
+      <p className="subtitle">Count words in your PDF instantly</p>
 
-      <input
-        type="file"
-        accept="application/pdf"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
+      <div className="card">
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) => setFile(e.target.files[0])}
+        />
 
-      <br /><br />
+        <button onClick={handleUpload}>
+          {loading ? "Processing..." : "Count Words"}
+        </button>
 
-      <button onClick={handleUpload}>
-        {loading ? "Processing..." : "Count Words"}
-      </button>
+        {result && (
+          <div className="result">
+            {result.error ? (
+              <p style={{ color: "red" }}>{result.error}</p>
+            ) : (
+              <>
+                <p>
+                  <strong>Words:</strong> {result.wordCount}
+                </p>
+                <p>
+                  <strong>Characters:</strong> {result.charCount}
+                </p>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
-      {result && (
-        <div style={{ marginTop: 20 }}>
-          <p><strong>Words:</strong> {result.wordCount}</p>
-          <p><strong>Characters:</strong> {result.charCount}</p>
-        </div>
-      )}
+      <p className="footer">Fast • Free • No Upload Stored</p>
     </main>
   );
 }
