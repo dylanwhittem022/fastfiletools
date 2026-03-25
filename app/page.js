@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function Home() {
   const [file, setFile] = useState(null);
@@ -10,7 +10,16 @@ export default function Home() {
 
   const dropRef = useRef();
 
-  // Drag events
+  // Load Google AdSense script once
+  useEffect(() => {
+    if (window.adsbygoogle) return;
+    const script = document.createElement("script");
+    script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
+    script.async = true;
+    script.setAttribute("data-ad-client", "YOUR-AD-CLIENT-ID"); // Replace with your AdSense client ID
+    document.body.appendChild(script);
+  }, []);
+
   const handleDragOver = (e) => {
     e.preventDefault();
     dropRef.current.classList.add("dragover");
@@ -43,7 +52,6 @@ export default function Home() {
     const formData = new FormData();
     formData.append("file", file);
 
-    // Fake progress animation
     const interval = setInterval(() => {
       setProgress((p) => (p < 90 ? p + 5 : p));
     }, 100);
@@ -65,6 +73,10 @@ export default function Home() {
     setTimeout(() => {
       setLoading(false);
       setProgress(0);
+      // Render ads after result
+      if (window.adsbygoogle) {
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e){}
+      }
     }, 300);
   };
 
@@ -72,6 +84,14 @@ export default function Home() {
     <main>
       <h1>Fast File Tools</h1>
       <p className="subtitle">Count words in your PDF instantly</p>
+
+      {/* Google AdSense Top */}
+      <ins className="adsbygoogle"
+           style={{ display: "block", textAlign: "center", marginBottom: "20px" }}
+           data-ad-client="YOUR-AD-CLIENT-ID"
+           data-ad-slot="YOUR-AD-SLOT-ID"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
 
       <div
         className="card"
@@ -107,20 +127,30 @@ export default function Home() {
         )}
 
         {result && (
-          <div className="result">
-            {result.error ? (
-              <p style={{ color: "red" }}>{result.error}</p>
-            ) : (
-              <>
-                <p>
-                  <strong>Words:</strong> {result.wordCount}
-                </p>
-                <p>
-                  <strong>Characters:</strong> {result.charCount}
-                </p>
-              </>
-            )}
-          </div>
+          <>
+            <div className="result">
+              {result.error ? (
+                <p style={{ color: "red" }}>{result.error}</p>
+              ) : (
+                <>
+                  <p>
+                    <strong>Words:</strong> {result.wordCount}
+                  </p>
+                  <p>
+                    <strong>Characters:</strong> {result.charCount}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Google AdSense Bottom */}
+            <ins className="adsbygoogle"
+                 style={{ display: "block", textAlign: "center", marginTop: "20px" }}
+                 data-ad-client="YOUR-AD-CLIENT-ID"
+                 data-ad-slot="YOUR-AD-SLOT-ID"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+          </>
         )}
       </div>
 
