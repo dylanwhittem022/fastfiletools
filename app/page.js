@@ -9,26 +9,34 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
 
   const dropRef = useRef();
+  const topAdRef = useRef();
+  const bottomAdRef = useRef();
 
-  // Load Google AdSense script once
+  // Load AdSense script once
   useEffect(() => {
-    if (window.adsbygoogle) return;
-    const script = document.createElement("script");
-    script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
-    script.async = true;
-    script.setAttribute("data-ad-client", "YOUR-AD-CLIENT-ID"); // Replace with your AdSense client ID
-    document.body.appendChild(script);
+    if (!window.adsbygoogle) {
+      const script = document.createElement("script");
+      script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
+      script.async = true;
+      script.setAttribute("data-ad-client", "YOUR-AD-CLIENT-ID"); // Replace
+      document.body.appendChild(script);
+    }
+
+    // Render ads once elements exist
+    try {
+      if (window.adsbygoogle) {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    } catch {}
   }, []);
 
+  // Drag & Drop handlers
   const handleDragOver = (e) => {
     e.preventDefault();
     dropRef.current.classList.add("dragover");
   };
-
-  const handleDragLeave = () => {
-    dropRef.current.classList.remove("dragover");
-  };
-
+  const handleDragLeave = () => dropRef.current.classList.remove("dragover");
   const handleDrop = (e) => {
     e.preventDefault();
     dropRef.current.classList.remove("dragover");
@@ -37,11 +45,9 @@ export default function Home() {
       setResult(null);
     }
   };
+  const handleClick = () => document.getElementById("fileInput").click();
 
-  const handleClick = () => {
-    document.getElementById("fileInput").click();
-  };
-
+  // Upload & process PDF
   const handleUpload = async () => {
     if (!file) return alert("Upload a PDF");
 
@@ -57,10 +63,7 @@ export default function Home() {
     }, 100);
 
     try {
-      const res = await fetch("/api/count", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch("/api/count", { method: "POST", body: formData });
       const data = await res.json();
       setResult(data);
     } catch (err) {
@@ -73,10 +76,10 @@ export default function Home() {
     setTimeout(() => {
       setLoading(false);
       setProgress(0);
-      // Render ads after result
-      if (window.adsbygoogle) {
-        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e){}
-      }
+      // Render bottom ad dynamically after result
+      try {
+        if (window.adsbygoogle) (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch {}
     }, 300);
   };
 
@@ -85,8 +88,9 @@ export default function Home() {
       <h1>Fast File Tools</h1>
       <p className="subtitle">Count words in your PDF instantly</p>
 
-      {/* Google AdSense Top */}
-      <ins className="adsbygoogle"
+      {/* Top Ad */}
+      <ins ref={topAdRef}
+           className="adsbygoogle"
            style={{ display: "block", textAlign: "center", marginBottom: "20px" }}
            data-ad-client="YOUR-AD-CLIENT-ID"
            data-ad-slot="YOUR-AD-SLOT-ID"
@@ -143,8 +147,9 @@ export default function Home() {
               )}
             </div>
 
-            {/* Google AdSense Bottom */}
-            <ins className="adsbygoogle"
+            {/* Bottom Ad */}
+            <ins ref={bottomAdRef}
+                 className="adsbygoogle"
                  style={{ display: "block", textAlign: "center", marginTop: "20px" }}
                  data-ad-client="YOUR-AD-CLIENT-ID"
                  data-ad-slot="YOUR-AD-SLOT-ID"
